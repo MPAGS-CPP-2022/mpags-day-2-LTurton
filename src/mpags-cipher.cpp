@@ -6,6 +6,15 @@
 
 std::string transformChar(const char in_char)
 {
+    /* transformChar take a character and transliterate to capitalised strings.
+
+    in_char - character to be modified, input is constant. 
+    If alphabetic, is automatically capitalised. 
+    If numeric, is converted to a capitalised string.
+
+    return: the character after operations.    
+    */
+
     std::string out_str;
     // - Convert to upper case
     if (std::isalpha(in_char)) {
@@ -54,6 +63,73 @@ std::string transformChar(const char in_char)
     return out_str;
 }
 
+bool processCommandLine(const std::vector<std::string>& ARGS, bool& help_req,
+                        bool& ver_req, std::string& input_filename,
+                        std::string& output_filename)
+{
+    /* processCOmmandLine take command line articles and process the results.
+     help_ref - boolean variable for help request.
+     ver_ref - boolean variable for version request.
+     input_filename - filename from -i article.
+     output_filename - filename form -o article.
+
+     return true if succesful, false if error in input pairs.
+
+    */
+
+    //Define Local Variables
+    const std::size_t N_INPUTS{ARGS.size()};
+    bool processStatus{
+        true};    // Status flag to indicate whether or not the parsing was successful
+
+    // CMD Inputs:
+    // skip 0 because this is program name and can be ignored.
+    for (int i{1}; i < N_INPUTS; ++i) {
+        //std::cout << "Argument " << i << " is " << ARGS[i] << std::endl;
+        // //Print All Arguements For User.
+        if (ARGS[i] == "-h" || ARGS[i] == "--help") {
+            help_req = true;
+        }
+
+        else if (ARGS[i] == "--version") {
+            ver_req = true;
+        }
+
+        //Handle input file
+        else if (ARGS[i] == "-i") {
+            // Next element is filename unless "-i" is the last argument
+            if (i == N_INPUTS - 1) {
+                std::cerr << "Error, -i needs a filaname argument" << std::endl;
+                processStatus = false;
+                break;    // exit main to indicate failure
+            } else {
+                input_filename = ARGS[i + 1];
+                std::cout << ("Input filename is " + input_filename) << "\n";
+                ++i;    //Advance PAST the argument
+            }
+        }
+
+        //Handle Output file
+        else if (ARGS[i] == "-o") {
+            if (i == N_INPUTS - 1) {
+                std::cerr << "Error, -o needs a filaname argument" << std::endl;
+                processStatus = false;
+                break;
+            } else {
+                output_filename = ARGS[i + 1];
+                std::cout << ("Output filename is " + output_filename) << "\n";
+                ++i;
+            }
+        } else {
+            // Return non-zero exit status to indicate failure for unknown ARG:
+            std::cerr << "[error] unknown argument '" << ARGS[i] << "'\n";
+            processStatus = false;
+            break;
+        }
+    }
+    return processStatus;
+}
+
 int main(int argc, char* argv[])
 {
     // Command Line Arguments:
@@ -67,54 +143,17 @@ int main(int argc, char* argv[])
     std::string input_filename{""};
     std::string output_filename{""};
 
+    const bool cmdLineStatus{processCommandLine(
+        INPUT_ARGS, help_req, ver_req, input_filename, output_filename)};
+
+    // Any failure in argument processing means the function shouldn't run.
+    if (!cmdLineStatus) {
+        return 1;
+    }
+
     const std::string HELP_STR{
         "Type a string, then press Ctrl+D to continue after the inputs are transliterated for classical ciphers."};
     const std::string VER_STR{"The current version is v0.5.0."};
-
-    // CMD Inputs:
-    // skip 0 because this is program name and can be ignored.
-    for (int i{1}; i < N_INPUTS; ++i) {
-        //std::cout << "Argument " << i << " is " << INPUT_ARGS[i] << std::endl;
-        // //Print All Arguements For User.
-        if (INPUT_ARGS[i] == "-h" || INPUT_ARGS[i] == "--help") {
-            help_req = true;
-        }
-
-        else if (INPUT_ARGS[i] == "--version") {
-            ver_req = true;
-        }
-
-        //Handle input file
-        else if (INPUT_ARGS[i] == "-i") {
-            // Next element is filename unless "-i" is the last argument
-            if (i == N_INPUTS - 1) {
-                std::cerr << "Error, -i needs a filaname argument" << std::endl;
-                return 1;    // exit main with non-zero return to indicate failure
-            } else {
-                input_filename = INPUT_ARGS[i + 1];
-                std::cout << ("Input filename is " + input_filename) << "\n";
-                ++i; //Advance PAST the argument
-            }
-        }
-
-        //Handle Output file
-        else if (INPUT_ARGS[i] == "-o") {
-            if (i == N_INPUTS - 1) {
-                std::cerr << "Error, -o needs a filaname argument" << std::endl;
-                return 1;
-            } else {
-                output_filename = INPUT_ARGS[i + 1];
-                std::cout << ("Output filename is " + output_filename) << "\n";
-                ++i; 
-            }
-        } else {
-            // Have an unknown flag to output error message and return non-zero
-            // exit status to indicate failure
-            std::cerr << "[error] unknown argument '" << INPUT_ARGS[i] << "'\n";
-            return 1;
-        }
-    }
-
     //Handle help, requires no further action so return 0; to end program
     if (help_req) {
         std::cout
@@ -145,7 +184,7 @@ int main(int argc, char* argv[])
     std::cout << "Please provide some text and press enter, Ctrl + 'd'."
               << std::endl;
     while (std::cin >> in_char) {
-        out_str += transformChar(in_char);        
+        out_str += transformChar(in_char);
     }
     // Print the transliterated text:
     std::cout << "Transliterated text is " << out_str << std::endl;
