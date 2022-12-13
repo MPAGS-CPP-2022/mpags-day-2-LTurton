@@ -3,12 +3,56 @@
 #include <iostream>
 #include <string>
 #include <vector>
-/*
-Good practice to include this, 
-basic strings only included in 
-iostream or g++ compiler is autofixing
-which is why it works without.
-*/
+
+std::string transformChar(const char in_char)
+{
+    std::string out_str;
+    // - Convert to upper case
+    if (std::isalpha(in_char)) {
+        //std::cout << "Selected Character is " << in_char << "\n";
+        out_str += std::toupper(in_char);
+    }
+
+    // - Change numbers to words
+    switch (in_char) {
+        case '0':
+            out_str += "ZERO";
+            break;
+        case '1':
+            out_str += "ONE";
+            break;
+        case '2':
+            out_str += "TWO";
+            break;
+        case '3':
+            out_str += "THREE";
+            break;
+        case '4':
+            out_str += "FOUR";
+            break;
+        case '5':
+            out_str += "FIVE";
+            break;
+        case '6':
+            out_str += "SIX";
+            break;
+        case '7':
+            out_str += "SEVEN";
+            break;
+        case '8':
+            out_str += "EIGHT";
+            break;
+        case '9':
+            out_str += "NINE";
+            break;
+        default:
+            //do nothing
+            break;
+    }
+    // - Ignore any other (non-alpha) character
+    // - In each case, add result to a string variable
+    return out_str;
+}
 
 int main(int argc, char* argv[])
 {
@@ -49,7 +93,7 @@ int main(int argc, char* argv[])
             } else {
                 input_filename = INPUT_ARGS[i + 1];
                 std::cout << ("Input filename is " + input_filename) << "\n";
-                continue;
+                ++i; //Advance PAST the argument
             }
         }
 
@@ -61,7 +105,7 @@ int main(int argc, char* argv[])
             } else {
                 output_filename = INPUT_ARGS[i + 1];
                 std::cout << ("Output filename is " + output_filename) << "\n";
-                continue;
+                ++i; 
             }
         } else {
             // Have an unknown flag to output error message and return non-zero
@@ -101,51 +145,7 @@ int main(int argc, char* argv[])
     std::cout << "Please provide some text and press enter, Ctrl + 'd'."
               << std::endl;
     while (std::cin >> in_char) {
-        // - Convert to upper case
-        if (std::isalpha(in_char)) {
-            //std::cout << "Selected Character is " << in_char << "\n";
-            out_str += std::toupper(in_char);
-            continue;
-        }
-
-        // - Change numbers to words
-        switch (in_char) {
-            case '0':
-                out_str += "ZERO";
-                break;
-            case '1':
-                out_str += "ONE";
-                break;
-            case '2':
-                out_str += "TWO";
-                break;
-            case '3':
-                out_str += "THREE";
-                break;
-            case '4':
-                out_str += "FOUR";
-                break;
-            case '5':
-                out_str += "FIVE";
-                break;
-            case '6':
-                out_str += "SIX";
-                break;
-            case '7':
-                out_str += "SEVEN";
-                break;
-            case '8':
-                out_str += "EIGHT";
-                break;
-            case '9':
-                out_str += "NINE";
-                break;
-            default:
-                //do nothing
-                break;
-        }
-        // - Ignore any other (non-alpha) character
-        // - In each case, add result to a string variable
+        out_str += transformChar(in_char);        
     }
     // Print the transliterated text:
     std::cout << "Transliterated text is " << out_str << std::endl;
