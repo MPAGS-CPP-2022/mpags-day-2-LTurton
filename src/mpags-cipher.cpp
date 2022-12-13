@@ -1,69 +1,82 @@
 #include <cctype>
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
+/*
+Good practice to include this, 
+basic strings only included in 
+iostream or g++ compiler is autofixing
+which is why it works without.
+*/
 
 int main(int argc, char* argv[])
 {
-    // Convert the command-line arguments into a more easily usable form
-    const std::vector<std::string> cmdLineArgs{argv, argv + argc};
-    const std::size_t nCmdLineArgs{cmdLineArgs.size()};
+    // Command Line Arguments:
+    const std::vector<std::string> INPUT_ARGS{
+        argv, argv + argc};    //Convert inputs to a vector.
+    const std::size_t N_INPUTS{INPUT_ARGS.size()};
 
-    // Options that might be set by the command-line arguments
-    bool helpRequested{false};
-    bool versionRequested{false};
-    std::string inputFile{""};
-    std::string outputFile{""};
+    // Related Variables:
+    bool help_req{false};
+    bool ver_req{false};
+    std::string input_filename{""};
+    std::string output_filename{""};
 
-    // Process command line arguments - ignore zeroth element, as we know this
-    // to be the program name and don't need to worry about it
-    for (std::size_t i{1}; i < nCmdLineArgs; ++i) {
-        if (cmdLineArgs[i] == "-h" || cmdLineArgs[i] == "--help") {
-            helpRequested = true;
-        } else if (cmdLineArgs[i] == "--version") {
-            versionRequested = true;
-        } else if (cmdLineArgs[i] == "-i") {
-            // Handle input file option
+    const std::string HELP_STR{
+        "Type a string, then press Ctrl+D to continue after the inputs are transliterated for classical ciphers."};
+    const std::string VER_STR{"The current version is v0.5.0."};
+
+    // CMD Inputs:
+    // skip 0 because this is program name and can be ignored.
+    for (int i{1}; i < N_INPUTS; ++i) {
+        //std::cout << "Argument " << i << " is " << INPUT_ARGS[i] << std::endl;
+        // //Print All Arguements For User.
+        if (INPUT_ARGS[i] == "-h" || INPUT_ARGS[i] == "--help") {
+            help_req = true;
+        }
+
+        else if (INPUT_ARGS[i] == "--version") {
+            ver_req = true;
+        }
+
+        //Handle input file
+        else if (INPUT_ARGS[i] == "-i") {
             // Next element is filename unless "-i" is the last argument
-            if (i == nCmdLineArgs - 1) {
-                std::cerr << "[error] -i requires a filename argument"
-                          << std::endl;
-                // exit main with non-zero return to indicate failure
-                return 1;
+            if (i == N_INPUTS - 1) {
+                std::cerr << "Error, -i needs a filaname argument" << std::endl;
+                return 1;    // exit main with non-zero return to indicate failure
             } else {
-                // Got filename, so assign value and advance past it
-                inputFile = cmdLineArgs[i + 1];
-                ++i;
+                input_filename = INPUT_ARGS[i + 1];
+                std::cout << ("Input filename is " + input_filename) << "\n";
+                continue;
             }
-        } else if (cmdLineArgs[i] == "-o") {
-            // Handle output file option
-            // Next element is filename unless "-o" is the last argument
-            if (i == nCmdLineArgs - 1) {
-                std::cerr << "[error] -o requires a filename argument"
-                          << std::endl;
-                // exit main with non-zero return to indicate failure
+        }
+
+        //Handle Output file
+        else if (INPUT_ARGS[i] == "-o") {
+            if (i == N_INPUTS - 1) {
+                std::cerr << "Error, -o needs a filaname argument" << std::endl;
                 return 1;
             } else {
-                // Got filename, so assign value and advance past it
-                outputFile = cmdLineArgs[i + 1];
-                ++i;
+                output_filename = INPUT_ARGS[i + 1];
+                std::cout << ("Output filename is " + output_filename) << "\n";
+                continue;
             }
         } else {
             // Have an unknown flag to output error message and return non-zero
             // exit status to indicate failure
-            std::cerr << "[error] unknown argument '" << cmdLineArgs[i]
-                      << "'\n";
+            std::cerr << "[error] unknown argument '" << INPUT_ARGS[i] << "'\n";
             return 1;
         }
     }
 
-    // Handle help, if requested
-    if (helpRequested) {
-        // Line splitting for readability
+    //Handle help, requires no further action so return 0; to end program
+    if (help_req) {
         std::cout
             << "Usage: mpags-cipher [-h/--help] [--version] [-i <file>] [-o <file>]\n\n"
             << "Encrypts/Decrypts input alphanumeric text using classical ciphers\n\n"
-            << "Available options:\n\n"
+            << HELP_STR << "Available options:\n\n"
             << "  -h|--help        Print this help message and exit\n\n"
             << "  --version        Print version information\n\n"
             << "  -i FILE          Read text to be processed from FILE\n"
@@ -71,86 +84,70 @@ int main(int argc, char* argv[])
             << "  -o FILE          Write processed text to FILE\n"
             << "                   Stdout will be used if not supplied\n\n"
             << std::endl;
-        // Help requires no further action, so return from main
-        // with 0 used to indicate success
         return 0;
     }
 
-    // Handle version, if requested
-    // Like help, requires no further action,
-    // so return from main with zero to indicate success
-    if (versionRequested) {
-        std::cout << "0.1.0" << std::endl;
+    //Handle version, also requires no further action.
+    if (ver_req) {
+        std::cout << VER_STR << "\n";
         return 0;
     }
 
-    // Initialise variables
-    char inputChar{'x'};
-    std::string inputText;
+    // Initialise for Cipher:
+    char in_char{};
+    std::string out_str{""};
 
-    // Read in user input from stdin/file
-    // Warn that input file option not yet implemented
-    if (!inputFile.empty()) {
-        std::cerr << "[warning] input from file ('" << inputFile
-                  << "') not implemented yet, using stdin\n";
-    }
-
-    // loop over each character from user input
-    while (std::cin >> inputChar) {
-        // Uppercase alphabetic characters
-        if (std::isalpha(inputChar)) {
-            inputText += std::toupper(inputChar);
+    // Transliterate input:
+    std::cout << "Please provide some text and press enter, Ctrl + 'd'."
+              << std::endl;
+    while (std::cin >> in_char) {
+        // - Convert to upper case
+        if (std::isalpha(in_char)) {
+            //std::cout << "Selected Character is " << in_char << "\n";
+            out_str += std::toupper(in_char);
             continue;
         }
 
-        // Transliterate digits to English words
-        switch (inputChar) {
+        // - Change numbers to words
+        switch (in_char) {
             case '0':
-                inputText += "ZERO";
+                out_str += "ZERO";
                 break;
             case '1':
-                inputText += "ONE";
+                out_str += "ONE";
                 break;
             case '2':
-                inputText += "TWO";
+                out_str += "TWO";
                 break;
             case '3':
-                inputText += "THREE";
+                out_str += "THREE";
                 break;
             case '4':
-                inputText += "FOUR";
+                out_str += "FOUR";
                 break;
             case '5':
-                inputText += "FIVE";
+                out_str += "FIVE";
                 break;
             case '6':
-                inputText += "SIX";
+                out_str += "SIX";
                 break;
             case '7':
-                inputText += "SEVEN";
+                out_str += "SEVEN";
                 break;
             case '8':
-                inputText += "EIGHT";
+                out_str += "EIGHT";
                 break;
             case '9':
-                inputText += "NINE";
+                out_str += "NINE";
+                break;
+            default:
+                //do nothing
                 break;
         }
-
-        // If the character isn't alphabetic or numeric, DONT add it
+        // - Ignore any other (non-alpha) character
+        // - In each case, add result to a string variable
     }
-
-    // Print out the transliterated text
-
-    // Warn that output file option not yet implemented
-    if (!outputFile.empty()) {
-        std::cerr << "[warning] output to file ('" << outputFile
-                  << "') not implemented yet, using stdout\n";
-    }
-
-    std::cout << inputText << std::endl;
-
-    // No requirement to return from main, but we do so for clarity
-    // and for consistency with other functions
+    // Print the transliterated text:
+    std::cout << "Transliterated text is " << out_str << std::endl;
     return 0;
 }
