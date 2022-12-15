@@ -13,12 +13,17 @@ set(CMAKE_CXX_STANDARD 20)
 
 # - Declare the build of mpags-cipher main program
 add_executable(mpags-cipher 
-                mpags-cipher.cpp
-                MPAGSCipher/TransformChar.cpp)
+        mpags-cipher.cpp
+        MPAGSCipher/TransformChar.cpp)
 
 # - Set Debug Flags
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -Wshadow -pedantic")
 
 target_compile_features(mpags-cipher    
     PRIVATE cxx_std_11 cxx_auto_type cxx_constexpr cxx_range_for cxx_uniform_initialization
+)
+
+#Ensure CMAKE can find our custom headers:
+target_include_directories(mpags-cipher
+PRIVATE MPAGSCipher
 )

@@ -4,9 +4,10 @@
 #include <string>
 #include <vector>
 
-//Declare Functions:
-std::string transformChar(const char in_char);
+// Our Own Project Headers:
+#include "TransformChar.hpp"
 
+//Declare Functions:
 bool processCommandLine(const std::vector<std::string>& ARGS, 
                         bool& help_req,bool& ver_req, 
                         std::string& input_filename,
