@@ -1,23 +1,24 @@
+#include <ProcessCommandLine.hpp> //Otherwise ProgramSettings is undefined.
+
 #include <iostream>
+#include <string>
 #include <vector>
 
-bool processCommandLine(const std::vector<std::string>& ARGS, bool& help_req,
-                        bool& ver_req, std::string& input_filename,
-                        std::string& output_filename, std::string& cipherKey,
-                        bool& encrypt)
+bool processCommandLine(const std::vector<std::string>& ARGS,
+                        ProgramSettings& settings)
 {
-    /* processCOmmandLine take command line articles and process the results.
+    /* processCommandLine take command line articles and process the results.
      help_ref           - boolean variable for help request.
      ver_ref            - boolean variable for version request.
      input_filename     - filename from -i article.
      output_filename    - filename form -o article.
      cipherKey          - Integer value of cipherKey following -k argument.
-     encyrpt            - Boolean, encrypt/decrypt text.
+     encrypt            - Boolean, encrypt/decrypt text, default decrypt.
 
      return true if succesful, 1 if error in inputs.
 
     */
-
+   
     //Define Local Variables
     bool processStatus{
         true};    // Status flag to indicate whether or not the parsing was successful
@@ -29,11 +30,11 @@ bool processCommandLine(const std::vector<std::string>& ARGS, bool& help_req,
         //std::cout << "Argument " << i << " is " << ARGS[i] << std::endl;
         // //Print All Arguements For User.
         if (ARGS[i] == "-h" || ARGS[i] == "--help") {
-            help_req = true;
+            settings.help_req = true;
         }
 
-        else if (ARGS[i] == "--version") {
-            ver_req = true;
+        else if (ARGS[i] == "--version" || ARGS[i] == "--ver") {
+            settings.ver_req = true;
         }
 
         //Handle input file
@@ -44,8 +45,8 @@ bool processCommandLine(const std::vector<std::string>& ARGS, bool& help_req,
                 processStatus = false;
                 break;    // exit main to indicate failure
             } else {
-                input_filename = ARGS[i + 1];
-                std::cout << ("Input filename is " + input_filename) << "\n";
+                settings.input_filename = ARGS[i + 1];
+                std::cout << ("Input filename is " + settings.input_filename) << "\n";
                 ++i;    //Advance PAST the argument
             }
         }
@@ -57,8 +58,8 @@ bool processCommandLine(const std::vector<std::string>& ARGS, bool& help_req,
                 processStatus = false;
                 break;
             } else {
-                output_filename = ARGS[i + 1];
-                std::cout << ("Output filename is " + output_filename) << "\n";
+                settings.output_filename = ARGS[i + 1];
+                std::cout << ("Output filename is " + settings.output_filename) << "\n";
                 ++i;
             }
         }
@@ -74,13 +75,13 @@ bool processCommandLine(const std::vector<std::string>& ARGS, bool& help_req,
                 break;
             } else {
                 // Got the key, so assign the value and advance past it
-                cipherKey = ARGS[i + 1];
+                settings.cipherKey = ARGS[i + 1];
                 ++i;
             }
         } else if (ARGS[i] == "--encrypt") {
-            encrypt = true;
+            settings.encrypt = true;
         } else if (ARGS[i] == "--decrypt") {
-            encrypt = false;
+            settings.encrypt = false;
         } else {
             // Return non-zero exit status to indicate failure for unknown ARG:
             std::cerr << "[error] unknown argument '" << ARGS[i] << "'\n";

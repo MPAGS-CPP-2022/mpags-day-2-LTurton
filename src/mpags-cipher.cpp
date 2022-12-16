@@ -1,14 +1,14 @@
+// Our Own Project Headers:
+#include "ProcessCommandLine.hpp"
+#include "RunCaesarCipher.hpp"
+#include "TransformChar.hpp"
+
 #include <cctype>
 #include <cmath>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-
-// Our Own Project Headers:
-#include "ProcessCommandLine.hpp"
-#include "RunCaesarCipher.hpp"
-#include "TransformChar.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -17,16 +17,9 @@ int main(int argc, char* argv[])
         argv, argv + argc};    //Convert inputs to a vector.
 
     // Related Variables:
-    bool help_req{false};
-    bool ver_req{false};
-    bool encrypt{false};
-    std::string cipherKey{};
-    std::string input_filename{""};
-    std::string output_filename{""};
+    ProgramSettings settings{false,false,"","","",false};
 
-    const bool cmdLineStatus{processCommandLine(INPUT_ARGS, help_req, ver_req,
-                                                input_filename, output_filename,
-                                                cipherKey, encrypt)};
+    const bool cmdLineStatus{processCommandLine(INPUT_ARGS,settings)};
 
     // Any failure in argument processing means the function shouldn't run.
     if (!cmdLineStatus) {
@@ -35,15 +28,15 @@ int main(int argc, char* argv[])
 
     const std::string HELP_STR{
         "Type a string, then press Ctrl+D to continue after the inputs are transliterated for classical ciphers."};
-    const std::string VER_STR{"The current version is v0.7.0."};
+    const std::string VER_STR{"The current version is v0.8.0."};
     //Handle help, requires no further action so return 0; to end program
-    if (help_req) {
+    if (settings.help_req) {
         std::cout
-            << "Usage: mpags-cipher [-h/--help] [--version] [-i <file>] [-o <file>]\n\n"
+            << "Usage: mpags-cipher [-h|--help] [--version|--ver] [-i <file>] [-o <file>]\n\n"
             << "Encrypts/Decrypts input alphanumeric text using classical ciphers\n\n"
             << HELP_STR << "Available options:\n\n"
             << "  -h|--help        Print this help message and exit.\n\n"
-            << "  --version        Print version information.\n\n"
+            << "  --version|--ver  Print version information.\n\n"
             << "  -i FILE          Read text to be processed from FILE.\n"
             << "                   Stdin will be used if not supplied.\n\n"
             << "  -o FILE          Write processed text to FILE.\n"
@@ -57,7 +50,7 @@ int main(int argc, char* argv[])
     }
 
     //Handle version, also requires no further action.
-    if (ver_req) {
+    if (settings.ver_req) {
         std::cout << VER_STR << "\n";
         return 0;
     }
@@ -67,11 +60,11 @@ int main(int argc, char* argv[])
     std::string input_string;
 
     // Transliterate Input:
-    if (!input_filename.empty()) {
+    if (!settings.input_filename.empty()) {
         // Open the file and check that we can read from it
-        std::ifstream inputStream{input_filename};
+        std::ifstream inputStream{settings.input_filename};
         if (!inputStream.good()) {
-            std::cerr << "[error] failed to read from file '" << input_filename
+            std::cerr << "[error] failed to read from file '" << settings.input_filename
                       << "'" << std::endl;
             return 1;
         }
@@ -93,40 +86,40 @@ int main(int argc, char* argv[])
 
     //Need to convert cipherKey from string to std::size_t and handle unsupplied key.
     std::size_t encryption_key{0};
-    if (!cipherKey.empty()) {
+    if (!settings.cipherKey.empty()) {
         // Check input string IS a valid positive int then convert:
-        for (const auto& elem : cipherKey) {
+        for (const auto& elem : settings.cipherKey) {
             if (!std::isdigit(elem)) {
                 std::cerr
                     << "[error] cipher key must be unsigned long integer for Caeser cipher, \n"
-                    << "     the supplied key of " << cipherKey
+                    << "     the supplied key of " << settings.cipherKey
                     << " cannot be converted." << std::endl;
                 return 1;
             }
 
-            encryption_key = stoul(cipherKey);
+            encryption_key = stoul(settings.cipherKey);
         }
     }
 
     /* TODO
 Cipher Function is bugged and just outputs aaaaa at whatever the string is's length. 
 */
-    std::string out_str{runCaesarCipher(input_string, encryption_key, encrypt)};
+    std::string out_str{runCaesarCipher(input_string, encryption_key, settings.encrypt)};
     std::cout << "The Cipher Key is " << encryption_key << std::endl;
 
     // Output
-    if (output_filename.empty()) {
+    if (settings.output_filename.empty()) {
         // Print the final text to terminal:
         std::cout << "Final text is " << out_str << std::endl;
     } else {
         //Output to file:
-        std::ofstream output_file{output_filename};
+        std::ofstream output_file{settings.output_filename};
         // {name, std::ios::app} to append rather than overwrite prev.
 
         if (output_file.good()) {
             output_file << out_str << std::endl;
         } else {
-            std::cerr << "[error], cannot write to file" << output_filename
+            std::cerr << "[error], cannot write to file" << settings.output_filename
                       << std::endl;
             return 1;
         }
