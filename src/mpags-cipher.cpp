@@ -7,9 +7,9 @@
 
 // Our Own Project Headers:
 #include "ProcessCommandLine.hpp"
+#include "RunCaesarCipher.hpp"
 #include "TransformChar.hpp"
 
-//Declare Functions:
 int main(int argc, char* argv[])
 {
     // Command Line Arguments:
@@ -19,11 +19,14 @@ int main(int argc, char* argv[])
     // Related Variables:
     bool help_req{false};
     bool ver_req{false};
+    bool encrypt{false};
+    std::string cipherKey{};
     std::string input_filename{""};
     std::string output_filename{""};
 
-    const bool cmdLineStatus{processCommandLine(
-        INPUT_ARGS, help_req, ver_req, input_filename, output_filename)};
+    const bool cmdLineStatus{processCommandLine(INPUT_ARGS, help_req, ver_req,
+                                                input_filename, output_filename,
+                                                cipherKey, encrypt)};
 
     // Any failure in argument processing means the function shouldn't run.
     if (!cmdLineStatus) {
@@ -39,12 +42,16 @@ int main(int argc, char* argv[])
             << "Usage: mpags-cipher [-h/--help] [--version] [-i <file>] [-o <file>]\n\n"
             << "Encrypts/Decrypts input alphanumeric text using classical ciphers\n\n"
             << HELP_STR << "Available options:\n\n"
-            << "  -h|--help        Print this help message and exit\n\n"
-            << "  --version        Print version information\n\n"
-            << "  -i FILE          Read text to be processed from FILE\n"
-            << "                   Stdin will be used if not supplied\n\n"
-            << "  -o FILE          Write processed text to FILE\n"
-            << "                   Stdout will be used if not supplied\n\n"
+            << "  -h|--help        Print this help message and exit.\n\n"
+            << "  --version        Print version information.\n\n"
+            << "  -i FILE          Read text to be processed from FILE.\n"
+            << "                   Stdin will be used if not supplied.\n\n"
+            << "  -o FILE          Write processed text to FILE.\n"
+            << "                   Stdout will be used if not supplied.\n\n"
+            << "  -k KEY           Encypt/Decrypt Key Shift Positions.\n"
+            << "                   A key of zero, i.e no encryption is default.\n\n"
+            << "--encrypt          Use key to encrypt text.\n\n"
+            << "--decrypt          Use key to decrypt text.\n"
             << std::endl;
         return 0;
     }
@@ -56,8 +63,8 @@ int main(int argc, char* argv[])
     }
 
     // Initialise for Cipher:
-    char in_char{};
-    std::string out_str{""};
+    char in_char;
+    std::string input_string;
 
     // Transliterate Input:
     if (!input_filename.empty()) {
@@ -71,28 +78,53 @@ int main(int argc, char* argv[])
 
         // Loop over each character from the file
         while (inputStream >> in_char) {
-            out_str += transformChar(in_char);
+            input_string += transformChar(in_char);
         }
 
     } else {
         // Loop over each character from user input
-        // (until Return then CTRL-D (EOF) pressed)
+        std::cout << "Please provide some text and press enter, Ctrl + 'd'."
+                  << std::endl;
         while (std::cin >> in_char) {
-            out_str += transformChar(in_char);
+            input_string += transformChar(in_char);
+        }
+    }
+    std::cout << "The transliterated text is " << input_string << std::endl;
+
+    //Need to convert cipherKey from string to std::size_t and handle unsupplied key.
+    std::size_t encryption_key{0};
+    if (!cipherKey.empty()) {
+        // Check input string IS a valid positive int then convert:
+        for (const auto& elem : cipherKey) {
+            if (!std::isdigit(elem)) {
+                std::cerr
+                    << "[error] cipher key must be unsigned long integer for Caeser cipher, \n"
+                    << "     the supplied key of " << cipherKey
+                    << " cannot be converted." << std::endl;
+                return 1;
+            }
+
+            encryption_key = stoul(cipherKey);
         }
     }
 
+    /* TODO
+Cipher Function is bugged and just outputs aaaaa at whatever the string is's length. 
+*/
+    std::string out_str{runCaesarCipher(input_string, encryption_key, encrypt)};
+    std::cout << "The Cipher Key is " << encryption_key << std::endl;
+
     // Output
     if (output_filename.empty()) {
-        // Print the transliterated text to terminal:
-        std::cout << "Transliterated text is " << out_str << std::endl;
+        // Print the final text to terminal:
+        std::cout << "Final text is " << out_str << std::endl;
     } else {
         //Output to file:
-        std::ofstream out_file{output_filename};
+        std::ofstream output_file{output_filename};
         // {name, std::ios::app} to append rather than overwrite prev.
 
-        if (out_file.good()) {
-            out_file << out_str << std::endl;
+        if (output_file.good()) {
+            output_file << out_str << std::endl;
         } else {
             std::cerr << "[error], cannot write to file" << output_filename
                       << std::endl;
