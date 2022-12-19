@@ -11,6 +11,9 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
+# - Add the MPAGSCipher subdirectory to the build
+add_subdirectory(MPAGSCipher)
+
 # - Declare the build of mpags-cipher main program
 add_executable(mpags-cipher 
         mpags-cipher.cpp
