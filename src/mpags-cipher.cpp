@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
     const std::string HELP_STR{
         "Type a string, then press Ctrl+D to continue after the inputs are transliterated for classical ciphers."};
-    const std::string VER_STR{"The current version is v0.9.0."};
+    const std::string VER_STR{"The current version is v0.9.1."};
     //Handle help, requires no further action so return 0; to end program
     if (settings.help_req) {
         std::cout
