@@ -2,6 +2,7 @@
 #include "ProcessCommandLine.hpp"
 #include "RunCaesarCipher.hpp"
 #include "TransformChar.hpp"
+#include "CaesarCipher.hpp"
 
 #include <cctype>
 #include <cmath>
@@ -28,7 +29,7 @@ int main(int argc, char* argv[])
 
     const std::string HELP_STR{
         "Type a string, then press Ctrl+D to continue after the inputs are transliterated for classical ciphers."};
-    const std::string VER_STR{"The current version is v0.9.1."};
+    const std::string VER_STR{"The current version is v0.9.2."};
     //Handle help, requires no further action so return 0; to end program
     if (settings.help_req) {
         std::cout
@@ -84,6 +85,7 @@ int main(int argc, char* argv[])
     }
     std::cout << "The transliterated text is " << input_string << std::endl;
 
+    CaesarCipher(settings.cipherKey);
     //Need to convert cipherKey from string to std::size_t and handle unsupplied key.
     std::size_t encryption_key{0};
     if (!settings.cipherKey.empty()) {
