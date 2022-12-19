@@ -3,6 +3,7 @@
 #include "RunCaesarCipher.hpp"
 #include "TransformChar.hpp"
 #include "CaesarCipher.hpp"
+#include "CipherMode.hpp"
 
 #include <cctype>
 #include <cmath>
@@ -11,6 +12,7 @@
 #include <string>
 #include <vector>
 
+
 int main(int argc, char* argv[])
 {
     // Command Line Arguments:
@@ -18,7 +20,7 @@ int main(int argc, char* argv[])
         argv, argv + argc};    //Convert inputs to a vector.
 
     // Related Variables:
-    ProgramSettings settings{false,false,"","","",false};
+    ProgramSettings settings{false,false,"","","",CipherMode::Encrypt};
 
     const bool cmdLineStatus{processCommandLine(INPUT_ARGS,settings)};
 

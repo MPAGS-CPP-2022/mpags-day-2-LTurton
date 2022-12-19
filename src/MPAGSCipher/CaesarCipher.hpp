@@ -1,6 +1,7 @@
 #ifndef MPAGSCIPHER_CAESARCIPHER_HPP
 #define MPAGSCIPHER_CAESARCIPHER_HPP
 
+#include "CipherMode.hpp"
 #include <cstddef>
 #include <string>
 #include <vector>
@@ -16,7 +17,7 @@ class CaesarCipher {
 
     //! Run Cipher:
     std::string applyCipher(const std::string& inputText,
-                            const bool encrypt) const;
+                            const CipherMode encrypt) const;
 
   private:
     const std::string ALPHABET_{"ABCDEFGHIJKLMNOPQRSTUVWXYZ"}; //Need to be defined first, otherwise uninitialised compiler error --> maybe const comes first?

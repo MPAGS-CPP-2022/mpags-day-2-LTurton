@@ -1,4 +1,5 @@
 #include <ProcessCommandLine.hpp> //Otherwise ProgramSettings is undefined.
+#include "CipherMode.hpp"
 
 #include <iostream>
 #include <string>
@@ -79,9 +80,9 @@ bool processCommandLine(const std::vector<std::string>& ARGS,
                 ++i;
             }
         } else if (ARGS[i] == "--encrypt") {
-            settings.encrypt = true;
+            settings.encrypt = CipherMode::Encrypt;
         } else if (ARGS[i] == "--decrypt") {
-            settings.encrypt = false;
+            settings.encrypt = CipherMode::Decrypt;
         } else {
             // Return non-zero exit status to indicate failure for unknown ARG:
             std::cerr << "[error] unknown argument '" << ARGS[i] << "'\n";

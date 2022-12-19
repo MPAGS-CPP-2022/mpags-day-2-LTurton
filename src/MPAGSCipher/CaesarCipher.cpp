@@ -1,4 +1,5 @@
 #include "CaesarCipher.hpp"
+#include "CipherMode.hpp"
 
 #include <iostream>
 #include <string>
@@ -31,7 +32,7 @@ CaesarCipher::CaesarCipher(const std::string& key) : key_{0}
 
 // Applies Ciphering:
 std::string CaesarCipher::applyCipher(const std::string& inputText,
-                                      const bool encrypt) const
+                                      const CipherMode encrypt) const
 {
     std::string output_string{};
     int shift_pos{};
@@ -43,16 +44,15 @@ std::string CaesarCipher::applyCipher(const std::string& inputText,
             if (origionalChar == ALPHABET_[i]) {
                 // Apply the chosen shift, and determine new character.
                 // Then break out of alphabet loop.
-                if (encrypt) {
-                    shift_pos = (i + key_) % ALPHABETSIZE_;
-                } else if (!encrypt) {
-                    shift_pos =
-                        (i + ALPHABETSIZE_ - key_) %
-                        ALPHABETSIZE_;    // +SIZE deals with negative wrapping nicely.
-                } else {
-                    std::cout
-                        << "Encrypt/decrypt not set, defaulting to decryption.";
-                    shift_pos = (i + ALPHABETSIZE_ - key_) % ALPHABETSIZE_;
+                switch (encrypt) {
+                    case CipherMode::Encrypt:
+                        shift_pos = (i + key_) % ALPHABETSIZE_;
+                        break;
+                    case CipherMode::Decrypt:
+                        shift_pos =
+                            (i + ALPHABETSIZE_ - key_) %
+                            ALPHABETSIZE_;    // +SIZE deals with negative wrapping nicely.
+                        break;
                 }
                 break;
             }
