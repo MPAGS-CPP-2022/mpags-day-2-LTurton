@@ -19,7 +19,9 @@ add_executable(mpags-cipher
         MPAGSCipher/ProcessCommandLine.cpp
         MPAGSCipher/ProcessCommandLine.hpp
         MPAGSCipher/RunCaesarCipher.cpp
-        MPAGSCipher/RunCaesarCipher.hpp)
+        MPAGSCipher/RunCaesarCipher.hpp
+        MPAGSCipher/CaesarCipher.cpp
+        MPAGSCipher/CaesarCipher.hpp)
 
 # - Set Debug Flags
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -Wshadow -pedantic")
