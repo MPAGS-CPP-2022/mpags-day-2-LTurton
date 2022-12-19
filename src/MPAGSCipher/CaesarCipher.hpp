@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
 
 /// Encrypt or decrypt text using the Caesar cipher with the given key
 class CaesarCipher {
@@ -13,7 +14,15 @@ class CaesarCipher {
     /// Create a new CaesarCipher, converting the given string into the key
     explicit CaesarCipher(const std::string& key);
 
-    std::size_t key_{0};
+    //! Run Cipher:
+    std::string applyCipher(const std::string& inputText,
+                            const bool encrypt) const;
+
+  private:
+    const std::string ALPHABET_{"ABCDEFGHIJKLMNOPQRSTUVWXYZ"}; //Need to be defined first, otherwise uninitialised compiler error --> maybe const comes first?
+    const std::size_t ALPHABETSIZE_{ALPHABET_.size()};
+
+    std::size_t key_{0};    //Encryption Key
 };
 
 #endif

@@ -85,29 +85,9 @@ int main(int argc, char* argv[])
     }
     std::cout << "The transliterated text is " << input_string << std::endl;
 
-    CaesarCipher(settings.cipherKey);
-    //Need to convert cipherKey from string to std::size_t and handle unsupplied key.
-    std::size_t encryption_key{0};
-    if (!settings.cipherKey.empty()) {
-        // Check input string IS a valid positive int then convert:
-        for (const auto& elem : settings.cipherKey) {
-            if (!std::isdigit(elem)) {
-                std::cerr
-                    << "[error] cipher key must be unsigned long integer for Caeser cipher, \n"
-                    << "     the supplied key of " << settings.cipherKey
-                    << " cannot be converted." << std::endl;
-                return 1;
-            }
-
-            encryption_key = stoul(settings.cipherKey);
-        }
-    }
-
-    /* TODO
-Cipher Function is bugged and just outputs aaaaa at whatever the string is's length. 
-*/
-    std::string out_str{runCaesarCipher(input_string, encryption_key, settings.encrypt)};
-    std::cout << "The Cipher Key is " << encryption_key << std::endl;
+    CaesarCipher cipher(settings.cipherKey);
+    std::string out_str{cipher.applyCipher(input_string, settings.encrypt)};
+    
 
     // Output
     if (settings.output_filename.empty()) {
