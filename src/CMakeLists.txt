@@ -20,5 +20,9 @@ add_executable(mpags-cipher mpags-cipher.cpp)
 # - Set Debug Flags
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -Wshadow -pedantic")
 
+# - Enable Testing & Include Testing Subdirectory
+enable_testing()
+add_subdirectory(Testing)
+
 #Link the  build to the MPAGSCipher Library
 target_link_libraries(mpags-cipher PRIVATE MPAGSCipher)
