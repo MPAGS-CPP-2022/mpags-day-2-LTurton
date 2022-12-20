@@ -1,9 +1,10 @@
 // Our Own Project Headers:
+#include "CaesarCipher.hpp"
+#include "CipherMode.hpp"
+#include "CipherType.hpp"
 #include "ProcessCommandLine.hpp"
 #include "RunCaesarCipher.hpp"
 #include "TransformChar.hpp"
-#include "CaesarCipher.hpp"
-#include "CipherMode.hpp"
 
 #include <cctype>
 #include <cmath>
@@ -12,7 +13,6 @@
 #include <string>
 #include <vector>
 
-
 int main(int argc, char* argv[])
 {
     // Command Line Arguments:
@@ -20,9 +20,10 @@ int main(int argc, char* argv[])
         argv, argv + argc};    //Convert inputs to a vector.
 
     // Related Variables:
-    ProgramSettings settings{false,false,"","","",CipherMode::Encrypt};
+    ProgramSettings settings{
+        false, false, "", "", "", CipherMode::Encrypt, CipherType::Caesar};
 
-    const bool cmdLineStatus{processCommandLine(INPUT_ARGS,settings)};
+    const bool cmdLineStatus{processCommandLine(INPUT_ARGS, settings)};
 
     // Any failure in argument processing means the function shouldn't run.
     if (!cmdLineStatus) {
@@ -35,7 +36,7 @@ int main(int argc, char* argv[])
     //Handle help, requires no further action so return 0; to end program
     if (settings.help_req) {
         std::cout
-            << "Usage: mpags-cipher [-h|--help] [--version|--ver] [-i <file>] [-o <file>]\n\n"
+            << "Usage: mpags-cipher [-h/--help] [--version] [-i <file>] [-o <file>] [-c <cipher>] [-k <key>] [--encrypt/--decrypt]\n\n"
             << "Encrypts/Decrypts input alphanumeric text using classical ciphers\n\n"
             << HELP_STR << "Available options:\n\n"
             << "  -h|--help        Print this help message and exit.\n\n"
@@ -44,6 +45,8 @@ int main(int argc, char* argv[])
             << "                   Stdin will be used if not supplied.\n\n"
             << "  -o FILE          Write processed text to FILE.\n"
             << "                   Stdout will be used if not supplied.\n\n"
+            << "  -c CIPHER        Specify the cipher to be used to perform the encryption/decryption\n"
+            << "                   CIPHER can be caesar or playfair (not yet implemented) - caesar is the default\n\n"
             << "  -k KEY           Encypt/Decrypt Key Shift Positions.\n"
             << "                   A key of zero, i.e no encryption is default.\n\n"
             << "--encrypt          Use key to encrypt text.\n\n"
@@ -67,8 +70,8 @@ int main(int argc, char* argv[])
         // Open the file and check that we can read from it
         std::ifstream inputStream{settings.input_filename};
         if (!inputStream.good()) {
-            std::cerr << "[error] failed to read from file '" << settings.input_filename
-                      << "'" << std::endl;
+            std::cerr << "[error] failed to read from file '"
+                      << settings.input_filename << "'" << std::endl;
             return 1;
         }
 
@@ -87,9 +90,21 @@ int main(int argc, char* argv[])
     }
     std::cout << "The transliterated text is " << input_string << std::endl;
 
-    CaesarCipher cipher(settings.cipherKey);
-    std::string out_str{cipher.applyCipher(input_string, settings.encrypt)};
-    
+    std::string out_str;
+    switch (settings.cipherType) {
+        case CipherType::Caesar: {
+            // Run the Caesar cipher (using the specified key and encrypt/decrypt flag) on the input text
+            CaesarCipher cipher{settings.cipherKey};
+            out_str = cipher.applyCipher(input_string, settings.encrypt);
+            break;
+        }
+        case CipherType::Playfair: {
+            std::cerr << "[warning] Playfair cipher not yet implemented"
+                      << std::endl;
+            out_str = input_string;
+            break;
+        }
+    }
 
     // Output
     if (settings.output_filename.empty()) {
@@ -103,8 +118,8 @@ int main(int argc, char* argv[])
         if (output_file.good()) {
             output_file << out_str << std::endl;
         } else {
-            std::cerr << "[error], cannot write to file" << settings.output_filename
-                      << std::endl;
+            std::cerr << "[error], cannot write to file"
+                      << settings.output_filename << std::endl;
             return 1;
         }
     }
