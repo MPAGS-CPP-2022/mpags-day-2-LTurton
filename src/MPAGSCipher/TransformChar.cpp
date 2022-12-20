@@ -5,7 +5,7 @@ std::string transformChar(const char in_char)
 {
     /* transformChar take a character and transliterate to capitalised strings.
 
-    in_char - character to be modified, input is constant. 
+    char in_char - character to be modified, input is constant. 
     If alphabetic, is automatically capitalised. 
     If numeric, is converted to a capitalised string.
 

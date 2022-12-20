@@ -1,5 +1,5 @@
-#include <ProcessCommandLine.hpp> //Otherwise ProgramSettings is undefined.
 #include "CipherMode.hpp"
+#include <ProcessCommandLine.hpp>    //Otherwise ProgramSettings is undefined.
 
 #include <iostream>
 #include <string>
@@ -19,7 +19,7 @@ bool processCommandLine(const std::vector<std::string>& ARGS,
      return true if succesful, 1 if error in inputs.
 
     */
-   
+
     //Define Local Variables
     bool processStatus{
         true};    // Status flag to indicate whether or not the parsing was successful
@@ -47,7 +47,8 @@ bool processCommandLine(const std::vector<std::string>& ARGS,
                 break;    // exit main to indicate failure
             } else {
                 settings.input_filename = ARGS[i + 1];
-                std::cout << ("Input filename is " + settings.input_filename) << "\n";
+                std::cout << ("Input filename is " + settings.input_filename)
+                          << "\n";
                 ++i;    //Advance PAST the argument
             }
         }
@@ -60,7 +61,8 @@ bool processCommandLine(const std::vector<std::string>& ARGS,
                 break;
             } else {
                 settings.output_filename = ARGS[i + 1];
-                std::cout << ("Output filename is " + settings.output_filename) << "\n";
+                std::cout << ("Output filename is " + settings.output_filename)
+                          << "\n";
                 ++i;
             }
         }
