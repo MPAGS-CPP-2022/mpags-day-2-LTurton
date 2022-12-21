@@ -2,6 +2,7 @@
 #include "CaesarCipher.hpp"
 #include "CipherMode.hpp"
 #include "CipherType.hpp"
+#include "PlayfairCipher.hpp"
 #include "ProcessCommandLine.hpp"
 #include "RunCaesarCipher.hpp"
 #include "TransformChar.hpp"
@@ -99,9 +100,8 @@ int main(int argc, char* argv[])
             break;
         }
         case CipherType::Playfair: {
-            std::cerr << "[warning] Playfair cipher not yet implemented"
-                      << std::endl;
-            out_str = input_string;
+            PlayfairCipher cipher{settings.cipherKey};
+            out_str = cipher.applyCipher(input_string, settings.encrypt);
             break;
         }
     }
