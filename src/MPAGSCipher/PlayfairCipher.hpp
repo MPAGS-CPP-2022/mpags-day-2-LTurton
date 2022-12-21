@@ -40,6 +40,8 @@ class PlayfairCipher {
 
   private:
     std::string key_{""};
+
+    const std::string ALPHABET_{"ABCDEFGHIJKLMNOPQRSTUVWXYZ"};
 };
 
 #endif
