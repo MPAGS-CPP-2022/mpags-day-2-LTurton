@@ -36,7 +36,18 @@ void PlayfairCipher::setKey(const std::string& key)
                    [](unsigned char c) { return (c == 'J') ? 'I' : c; });
 
     // Remove duplicated letters
+    std::string duplicateLetters{""};
+    auto detectDuplicates = [&](char c) {
+        if (duplicateLetters.find(c) == std::string::npos) {
+            duplicateLetters += c;    //if not in duplicate letters, append c.
+            return false;
+        } else {
+            return true;
+        }
+    };
 
+    key_.erase(std::remove_if(key_.begin(), key_.end(), detectDuplicates),
+               key_.end());
     // Store the coords of each letter
 
     // Store the playfair cihper key map
