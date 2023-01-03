@@ -50,7 +50,7 @@ void PlayfairCipher::setKey(const std::string& key)
                key_.end());
     // Store the coords of each letter
 
-    // Store the playfair cihper key map
+    // Store the playfair cipher key map
 }
 
 // Applies the Playfair Cipher
