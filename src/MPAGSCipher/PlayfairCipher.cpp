@@ -1,5 +1,4 @@
 #include "PlayfairCipher.hpp"
-#include "CipherMode.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -18,13 +17,18 @@ void PlayfairCipher::setKey(const std::string& key)
     key_ = key;
 
     // Append the alphabet
-    key_ += ALPHABET_;
+    key_ += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
     // Make sure the key is upper case
     std::transform(
         std::begin(key_), std::end(key_), std::begin(key_),
         ::toupper);    //--> (input_start, input_end, output_start, operator)
 
     // Remove non-alpha characters
+    key_.erase(std::remove_if(key_.begin(), key_.end(),
+                              [](unsigned char c) { return !std::isalpha(c); }),
+               key_.end());
+
     // Change J -> I
 
     // Remove duplicated letters
@@ -32,7 +36,7 @@ void PlayfairCipher::setKey(const std::string& key)
     // Store the coords of each letter
 
     // Store the playfair cihper key map
-};
+}
 
 // Applies the Playfair Cipher
 std::string PlayfairCipher::applyCipher(const std::string& inputText,
