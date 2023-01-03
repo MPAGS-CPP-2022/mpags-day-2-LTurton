@@ -25,11 +25,15 @@ void PlayfairCipher::setKey(const std::string& key)
         ::toupper);    //--> (input_start, input_end, output_start, operator)
 
     // Remove non-alpha characters
+    //--> use a lambda which re-orders string with whitespaces to left, and erases those spaces.
     key_.erase(std::remove_if(key_.begin(), key_.end(),
                               [](unsigned char c) { return !std::isalpha(c); }),
                key_.end());
 
     // Change J -> I
+    std::transform(key_.begin(), key_.end(),
+                   key.begin(),    //write to same location
+                   [](unsigned char c) { return (c == 'J') ? 'I' : c; });
 
     // Remove duplicated letters
 
