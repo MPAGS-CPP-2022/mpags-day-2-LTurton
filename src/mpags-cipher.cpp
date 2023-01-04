@@ -6,6 +6,7 @@
 #include "ProcessCommandLine.hpp"
 #include "RunCaesarCipher.hpp"
 #include "TransformChar.hpp"
+#include "VigenereCipher.hpp"
 
 #include <cctype>
 #include <cmath>
@@ -47,7 +48,7 @@ int main(int argc, char* argv[])
             << "  -o FILE          Write processed text to FILE.\n"
             << "                   Stdout will be used if not supplied.\n\n"
             << "  -c CIPHER        Specify the cipher to be used to perform the encryption/decryption\n"
-            << "                   CIPHER can be caesar or playfair (not yet implemented) - caesar is the default\n\n"
+            << "                   CIPHER can be caesar, playfair or vigenere - caesar is the default\n\n"
             << "  -k KEY           Encypt/Decrypt Key Shift Positions.\n"
             << "                   A key of zero, i.e no encryption is default.\n\n"
             << "--encrypt          Use key to encrypt text.\n\n"
@@ -101,6 +102,11 @@ int main(int argc, char* argv[])
         }
         case CipherType::Playfair: {
             PlayfairCipher cipher{settings.cipherKey};
+            out_str = cipher.applyCipher(input_string, settings.encrypt);
+            break;
+        }
+        case CipherType::Vigenere: {
+            VigenereCipher cipher{settings.cipherKey};
             out_str = cipher.applyCipher(input_string, settings.encrypt);
             break;
         }

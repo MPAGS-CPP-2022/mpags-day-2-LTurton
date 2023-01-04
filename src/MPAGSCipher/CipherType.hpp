@@ -12,7 +12,8 @@
  */
 enum class CipherType {
     Caesar,     ///< The Caesar cipher
-    Playfair    ///< The Playfair cipher
+    Playfair,    ///< The Playfair cipher
+    Vigenere    ///< The Vigenere cipher
 };
 
 #endif    // MPAGSCIPHER_CIPHERTYPE_HPP
