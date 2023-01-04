@@ -19,5 +19,5 @@ PUBLIC ${CMAKE_CURRENT_LIST_DIR}
 )
 
 target_compile_features(MPAGSCipher    
-    PRIVATE cxx_std_11 cxx_auto_type cxx_constexpr cxx_range_for cxx_uniform_initialization
+    PRIVATE cxx_std_17 cxx_auto_type cxx_constexpr cxx_range_for cxx_uniform_initialization
 )

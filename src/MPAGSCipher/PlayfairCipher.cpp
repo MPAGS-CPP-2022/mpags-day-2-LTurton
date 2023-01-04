@@ -48,7 +48,7 @@ void PlayfairCipher::setKey(const std::string& key)
 
     key_.erase(std::remove_if(key_.begin(), key_.end(), detectDuplicates),
                key_.end());
-               
+
     // Store the coords of each letter
     // (at this point the key length must be equal to grid dimension squared)
     for (std::size_t i{0}; i < keyLength_; ++i) {
@@ -117,21 +117,25 @@ std::string PlayfairCipher::applyCipher(const std::string& inputText,
         PlayfairCoords firstCoord{charLookup_.at(outputText[i])};
         PlayfairCoords secondCoord{charLookup_.at(outputText[i + 1])};
 
+        // Use Structured Bindings to improve readability:
+        auto& [rowOne, columnOne]{firstCoord};
+        auto& [rowTwo, columnTwo]{secondCoord};
+
         // Find whether the two points are on a row, a column or form a rectangle/square
         // Then apply the appropriate rule to these coords to get new coords
-        if (firstCoord.first == secondCoord.first) {
+        if (rowOne == rowTwo {
             // Row - so increment/decrement the column indices (modulo the grid dimension)
-            firstCoord.second = (firstCoord.second + shift) % gridSize_;
-            secondCoord.second = (secondCoord.second + shift) % gridSize_;
+            columnOne = (columnOne + shift) % gridSize_;
+            columnTwo = (columnTwo + shift) % gridSize_;
 
-        } else if (firstCoord.second == secondCoord.second) {
+        } else if (columnOne == columnTwo) {
             // Column - so increment/decrement the row indices (modulo the grid dimension)
-            firstCoord.first = (firstCoord.first + shift) % gridSize_;
-            secondCoord.first = (secondCoord.first + shift) % gridSize_;
+            rowOne = (rowOne + shift) % gridSize_;
+            rowTwo = (rowTwo + shift) % gridSize_;
 
         } else {
             // Rectangle/Square - so keep the rows the same and swap the columns
-            std::swap(firstCoord.second, secondCoord.second);
+            std::swap(columnOne, columnTwo);
         }
         // - Find the letters associated with the new coords & Make the replacements
         outputText[i] = coordLookup_.at(firstCoord);
