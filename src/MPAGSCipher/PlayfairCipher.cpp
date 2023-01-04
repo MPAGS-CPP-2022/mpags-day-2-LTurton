@@ -78,12 +78,12 @@ std::string PlayfairCipher::applyCipher(const std::string& inputText,
 
     // Find repeated characters and add an X (or a Q for repeated X's)
     // (only when they occur within a bigram)
-    std::string tempString("");
+    std::string tempString{""};
     tempString.reserve(
         outputText.size() *
         1.1);    //Reserve space to hold the result, plus headroom.
 
-    for (std::size_t i{0}; i < inputText.size(); i += 2) {
+    for (std::size_t i{0}; i < outputText.size(); i += 2) {
         //Always add first of character pairs
         tempString += outputText[i];
         if (i + 1 == outputText.size()) {
@@ -96,7 +96,7 @@ std::string PlayfairCipher::applyCipher(const std::string& inputText,
             tempString += outputText[i + 1];
 
         } else {    // if they're the same, add X/Q
-            tempString += (outputText[i + 1] == 'X') ? 'X' : 'Q';
+            tempString += (outputText[i] == 'X') ? 'Q' : 'X';
 
             //decrement i because outputText[i+1] hasn't been used
             --i;
