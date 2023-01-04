@@ -123,7 +123,7 @@ std::string PlayfairCipher::applyCipher(const std::string& inputText,
 
         // Find whether the two points are on a row, a column or form a rectangle/square
         // Then apply the appropriate rule to these coords to get new coords
-        if (rowOne == rowTwo {
+        if (rowOne == rowTwo) {
             // Row - so increment/decrement the column indices (modulo the grid dimension)
             columnOne = (columnOne + shift) % gridSize_;
             columnTwo = (columnTwo + shift) % gridSize_;
