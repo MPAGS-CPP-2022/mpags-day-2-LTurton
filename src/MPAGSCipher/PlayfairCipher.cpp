@@ -17,7 +17,7 @@ void PlayfairCipher::setKey(const std::string& key)
     key_ = key;
 
     // Append the alphabet
-    key_ += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    key_ += ALPHABET_;
 
     // Make sure the key is upper case
     std::transform(
@@ -32,7 +32,7 @@ void PlayfairCipher::setKey(const std::string& key)
 
     // Change J -> I
     std::transform(key_.begin(), key_.end(),
-                   key.begin(),    //write to same location
+                   key_.begin(),    //write to same location
                    [](unsigned char c) { return (c == 'J') ? 'I' : c; });
 
     // Remove duplicated letters
@@ -48,7 +48,18 @@ void PlayfairCipher::setKey(const std::string& key)
 
     key_.erase(std::remove_if(key_.begin(), key_.end(), detectDuplicates),
                key_.end());
+               
     // Store the coords of each letter
+    // (at this point the key length must be equal to grid dimension squared)
+    for (std::size_t i{0}; i < keyLength_; ++i) {
+        std::size_t row{i / gridSize_};
+        std::size_t column{i % gridSize_};
+
+        auto coords = std::make_pair(row, column);
+
+        charLookup_[key_[i]] = coords;
+        coordLookup_[coords] = key_[i];
+    }
 
     // Store the playfair cipher key map
 }
@@ -61,22 +72,72 @@ std::string PlayfairCipher::applyCipher(const std::string& inputText,
     std::string outputText{inputText};
 
     // Change J -> I
+    std::transform(outputText.begin(), outputText.end(),
+                   outputText.begin(),    //write to same location
+                   [](unsigned char c) { return (c == 'J') ? 'I' : c; });
 
     // Find repeated characters and add an X (or a Q for repeated X's)
+    // (only when they occur within a bigram)
+    std::string tempString("");
+    tempString.reserve(
+        outputText.size() *
+        1.1);    //Reserve space to hold the result, plus headroom.
 
-    // If the size of the input is odd, add a trailing Z
+    for (std::size_t i{0}; i < inputText.size(); i += 2) {
+        //Always add first of character pairs
+        tempString += outputText[i];
+        if (i + 1 == outputText.size()) {
+            //If this is last character, result is odd so add a Z, or X if char is already Z
+            tempString += (outputText[i] == 'Z') ? 'X' : 'Z';
+            break;    //Last character, so leave loop
+
+        } else if (outputText[i + 1] != outputText[i]) {
+            // if characters are different, add the new character
+            tempString += outputText[i + 1];
+
+        } else {    // if they're the same, add X/Q
+            tempString += (outputText[i + 1] == 'X') ? 'X' : 'Q';
+
+            //decrement i because outputText[i+1] hasn't been used
+            --i;
+        }
+    }
+
+    // Swap the contents of the original and modified strings - cheaper than assignment
+    outputText.swap(tempString);
+
+    // Depending on encryption/decryption mode, set whether to increment or
+    // decrement the column/row index (modulo the grid dimension)
+    const std::size_t shift{
+        (cipherMode == CipherMode::Encrypt) ? 1u : gridSize_ - 1u};
 
     // Loop over the input digraphs
+    for (std::size_t i{0}; i < outputText.size(); i += 2) {
+        // - Find the coordinates in the grid for each digraph
+        PlayfairCoords firstCoord{charLookup_.at(outputText[i])};
+        PlayfairCoords secondCoord{charLookup_.at(outputText[i + 1])};
 
-    // - Find the coordinates in the grid for each digraph
+        // Find whether the two points are on a row, a column or form a rectangle/square
+        // Then apply the appropriate rule to these coords to get new coords
+        if (firstCoord.first == secondCoord.first) {
+            // Row - so increment/decrement the column indices (modulo the grid dimension)
+            firstCoord.second = (firstCoord.second + shift) % gridSize_;
+            secondCoord.second = (secondCoord.second + shift) % gridSize_;
 
-    // - Apply the rules to these coords to get new coords
+        } else if (firstCoord.second == secondCoord.second) {
+            // Column - so increment/decrement the row indices (modulo the grid dimension)
+            firstCoord.first = (firstCoord.first + shift) % gridSize_;
+            secondCoord.first = (secondCoord.first + shift) % gridSize_;
 
-    // - Find the letters associated with the new coords
-
-    // - Make the replacements
+        } else {
+            // Rectangle/Square - so keep the rows the same and swap the columns
+            std::swap(firstCoord.second, secondCoord.second);
+        }
+        // - Find the letters associated with the new coords & Make the replacements
+        outputText[i] = coordLookup_.at(firstCoord);
+        outputText[i + 1] = coordLookup_.at(secondCoord);
+    }
 
     // Return the output text
-    std::cout << "Playfair Cipher has not yet been implemented" << std::endl;
     return outputText;
 }

@@ -68,7 +68,7 @@ Available options:
                    Stdout will be used if not supplied
 
   -c CIPHER        Specify the cipher to be used to perform the encryption/decryption
-                   CIPHER can be caesar or playfair (not yet implemented) - caesar is the default
+                   CIPHER can be caesar or playfair - caesar is the default
 
   -k KEY           Specify the cipher KEY
                    A null key, i.e. no encryption, is used if not supplied
