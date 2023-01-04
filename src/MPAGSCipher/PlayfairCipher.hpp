@@ -44,9 +44,6 @@ class PlayfairCipher {
                             const CipherMode cipherMode) const;
 
   private:
-    ///Alphabet
-    const std::string ALPHABET_ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
     /// The grid size
     const std::string::size_type gridSize_{5};
 

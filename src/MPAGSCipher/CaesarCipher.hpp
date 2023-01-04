@@ -42,12 +42,6 @@ class CaesarCipher {
                             const CipherMode encrypt) const;
 
   private:
-    /// The alphabet - used to determine the cipher character given the plain character and the key
-    const std::string ALPHABET_{
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"};    //Need to be defined first, otherwise uninitialised compiler error --> maybe const comes first?
-    /// The size of the alphabet
-    const std::size_t ALPHABETSIZE_{ALPHABET_.size()};
-
     /// The cipher key, essentially a constant shift to be applied
     std::size_t key_{0};
 };
