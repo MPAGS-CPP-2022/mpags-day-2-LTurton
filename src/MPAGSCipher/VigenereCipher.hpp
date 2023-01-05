@@ -3,7 +3,9 @@
 
 #include "CipherMode.hpp"
 
+#include <map>
 #include <string>
+#include "CaesarCipher.hpp"
 
 /**
  * \file VigenereCipher.hpp
@@ -29,7 +31,7 @@ class VigenereCipher {
      *
      * \param key the key to use in the cipher
      */
-    void setKey(const std::string& key){};
+    void setKey(const std::string& key);
 
     /**
      * \brief Apply the cipher to the provided text
@@ -45,6 +47,9 @@ class VigenereCipher {
   private:
     /// The cipher key
     std::string key_{""};
+
+    /// Lookup Table --> Allowing The Existing Caeser Cipher to be used
+    std::map<char, CaesarCipher> charLookup;
 };
 
 #endif
