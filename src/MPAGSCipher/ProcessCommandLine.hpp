@@ -26,12 +26,11 @@ struct ProgramSettings {
     /// -o filename            : indicates input of user supplied filename to write to.
     std::string output_filename;
     /// -k KEY                 : indiciates input user encryption key
-    std::string cipherKey;
+    std::vector<std::string> cipherKey;
+    /// Flag indicating which cipher to use (e.g. Caesar, Playfair, etc.)
+    std::vector<CipherType> cipherType;
     /// --encrypt --decrypt    : indicates whether cipher encrypts (true) or decrypts (false)
     CipherMode encrypt;
-
-    /// Flag indicating which cipher to use (e.g. Caesar, Playfair, etc.)
-    CipherType cipherType;
 };
 
 /**

@@ -39,7 +39,7 @@ class VigenereCipher {
      * \return the result of applying the cipher to the input text
      */
 
-    std::string applyCipher(const std::string& inputText,
+    std::string applyCipher(const std::string& input_string,
                             const CipherMode cipherMode) const;
 
   private:

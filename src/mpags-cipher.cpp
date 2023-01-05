@@ -21,9 +21,8 @@ int main(int argc, char* argv[])
     const std::vector<std::string> INPUT_ARGS{
         argv, argv + argc};    //Convert inputs to a vector.
 
-    // Related Variables:
-    ProgramSettings settings{
-        false, false, "", "", "", CipherMode::Encrypt, CipherType::Caesar};
+    // Related Variables:    
+    ProgramSettings settings{false, false, "", "", {}, {}, CipherMode::Encrypt};
 
     const bool cmdLineStatus{processCommandLine(INPUT_ARGS, settings)};
 
@@ -92,22 +91,22 @@ int main(int argc, char* argv[])
     }
     std::cout << "The transliterated text is " << input_string << std::endl;
 
-    std::string out_str;
-    switch (settings.cipherType) {
+    std::string out_string;
+    switch (settings.cipherType[0]) {
         case CipherType::Caesar: {
             // Run the Caesar cipher (using the specified key and encrypt/decrypt flag) on the input text
-            CaesarCipher cipher{settings.cipherKey};
-            out_str = cipher.applyCipher(input_string, settings.encrypt);
+            CaesarCipher cipher{settings.cipherKey[0]};
+            out_string = cipher.applyCipher(input_string, settings.encrypt);
             break;
         }
         case CipherType::Playfair: {
-            PlayfairCipher cipher{settings.cipherKey};
-            out_str = cipher.applyCipher(input_string, settings.encrypt);
+            PlayfairCipher cipher{settings.cipherKey[0]};
+            out_string = cipher.applyCipher(input_string, settings.encrypt);
             break;
         }
         case CipherType::Vigenere: {
-            VigenereCipher cipher{settings.cipherKey};
-            out_str = cipher.applyCipher(input_string, settings.encrypt);
+            VigenereCipher cipher{settings.cipherKey[0]};
+            out_string = cipher.applyCipher(input_string, settings.encrypt);
             break;
         }
     }
@@ -115,14 +114,14 @@ int main(int argc, char* argv[])
     // Output
     if (settings.output_filename.empty()) {
         // Print the final text to terminal:
-        std::cout << "Final text is " << out_str << std::endl;
+        std::cout << "Final text is " << out_string << std::endl;
     } else {
         //Output to file:
         std::ofstream output_file{settings.output_filename};
         // {name, std::ios::app} to append rather than overwrite prev.
 
         if (output_file.good()) {
-            output_file << out_str << std::endl;
+            output_file << out_string << std::endl;
         } else {
             std::cerr << "[error], cannot write to file"
                       << settings.output_filename << std::endl;

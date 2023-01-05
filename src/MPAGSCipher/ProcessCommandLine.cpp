@@ -24,6 +24,11 @@ bool processCommandLine(const std::vector<std::string>& ARGS,
     bool processStatus{
         true};    // Status flag to indicate whether or not the parsing was successful
 
+    // Default to expecting information about one cipher
+    const std::size_t nExpectedCiphers{1};
+    settings.cipherType.reserve(nExpectedCiphers);
+    settings.cipherKey.reserve(nExpectedCiphers);
+
     // CMD Inputs:
     // skip 0 because this is program name and can be ignored.
     const std::size_t N_INPUTS{ARGS.size()};
@@ -78,7 +83,7 @@ bool processCommandLine(const std::vector<std::string>& ARGS,
                 break;
             } else {
                 // Got the key, so assign the value and advance past it
-                settings.cipherKey = ARGS[i + 1];
+                settings.cipherKey.push_back(ARGS[i + 1]);
                 ++i;
             }
         } else if (ARGS[i] == "--encrypt") {
@@ -97,14 +102,14 @@ bool processCommandLine(const std::vector<std::string>& ARGS,
             } else {
                 // Got the cipher name, so assign the value and advance past it
                 if (ARGS[i + 1] == "caesar") {
-                    settings.cipherType = CipherType::Caesar;
+                    settings.cipherType.push_back(CipherType::Caesar);
                 } else if (ARGS[i + 1] == "playfair") {
-                    settings.cipherType = CipherType::Playfair;
-                    } else if (ARGS[i + 1] == "vigenere") {
-                    settings.cipherType = CipherType::Vigenere;
+                    settings.cipherType.push_back(CipherType::Playfair);
+                } else if (ARGS[i + 1] == "vigenere") {
+                    settings.cipherType.push_back(CipherType::Vigenere);
                 } else {
-                    std::cerr << "[error] unknown cipher '"
-                              << ARGS[i + 1] << "'\n";
+                    std::cerr << "[error] unknown cipher '" << ARGS[i + 1]
+                              << "'\n";
                     processStatus = false;
                     break;
                 }
@@ -117,5 +122,28 @@ bool processCommandLine(const std::vector<std::string>& ARGS,
             break;
         }
     }
+
+    // For backward compatibility we allow (for a single cipher) nothing to be
+    // specified and default to using Caesar cipher and/or an empty string key
+    if (nExpectedCiphers == 1) {
+        if (settings.cipherType.empty()) {
+            settings.cipherType.push_back(CipherType::Caesar);
+        }
+        if (settings.cipherKey.empty()) {
+            settings.cipherKey.push_back("");
+        }
+    }
+
+    // Check that we have information on the expected number of ciphers
+    const std::size_t nTypes{settings.cipherType.size()};
+    const std::size_t nKeys{settings.cipherKey.size()};
+    if (nTypes != nExpectedCiphers || nKeys != nExpectedCiphers) {
+        std::cerr << "[error] expected types and keys for " << nExpectedCiphers
+                  << " ciphers\n"
+                  << "        but received " << nTypes << " types and " << nKeys
+                  << " keys" << std::endl;
+        processStatus = false;
+    }
+    
     return processStatus;
 }

@@ -26,11 +26,11 @@ void VigenereCipher::setKey(const std::string& key)
 }
 
 // Applies the Vigenere Cipher
-std::string VigenereCipher::applyCipher(const std::string& inputText,
+std::string VigenereCipher::applyCipher(const std::string& input_string,
                                         const CipherMode /*cipherMode*/) const
 {
     // Create the output string, initially a copy of the input text
-    std::string outputText{inputText};
+    std::string out_string{input_string};
 
     // Loop through the text
 
@@ -44,5 +44,5 @@ std::string VigenereCipher::applyCipher(const std::string& inputText,
     // - Put the new character into the output
 
     // Return the output text
-    return outputText;
+    return out_string;
 }
