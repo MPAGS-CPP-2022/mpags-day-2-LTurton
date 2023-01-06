@@ -8,11 +8,8 @@
 std::string runCaesarCipher(const std::string& inputText, const std::size_t key,
                             const bool encrypt)
 {
-    // Create the a output string    
-
-    //Fix The Key in the range 0 - length alphabet
+    // Create the a output string & Fix The Key in the range 0 - length alphabet
     const std::size_t filter_key = key % Alphabet::size;
-
     std::string output_string{};
     int shift_pos{};
 

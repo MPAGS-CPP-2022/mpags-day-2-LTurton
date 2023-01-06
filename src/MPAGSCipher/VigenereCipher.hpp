@@ -49,7 +49,7 @@ class VigenereCipher {
     std::string key_{""};
 
     /// Lookup Table --> Allowing The Existing Caeser Cipher to be used
-    std::map<char, CaesarCipher> charLookup;
+    std::map<char, CaesarCipher> charLookup_;
 };
 
 #endif
